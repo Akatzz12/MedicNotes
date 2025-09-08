@@ -80,7 +80,7 @@ const PatientList: React.FC<PatientListProps> = ({ records, onRecordClick }) => 
       <Box sx={{ mb: 3 }}>
         <TextField
           fullWidth
-          placeholder="Search students, evaluators, or summaries..."
+          placeholder="Search students, doctors, or summaries..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
