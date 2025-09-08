@@ -1,0 +1,16 @@
+{
+  "short_name": "MedicNotes",
+  "name": "Medical Notes App",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#1976d2",
+  "background_color": "#ffffff"
+}
+
