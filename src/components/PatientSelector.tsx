@@ -9,7 +9,7 @@ import {
 import { Add as AddIcon } from '@mui/icons-material';
 import Modal from './Modal';
 import PatientDetailModal from './PatientDetailModal';
-import { PatientSelectorProps, Patient, FormData } from '../types';
+import { PatientSelectorProps, FormData, Patient } from '../types';
 import { useAppContext } from '../context/AppContext';
 
 const PatientSelector: React.FC<PatientSelectorProps> = ({ 
@@ -22,16 +22,26 @@ const PatientSelector: React.FC<PatientSelectorProps> = ({
   const [historyOpen, setHistoryOpen] = useState<boolean>(false);
   const { patientRecords } = useAppContext();
 
-  const handleAddPatient = (formData: FormData): void => {
-    const newPatient: Patient = {
-      id: Date.now(),
-      name: formData.patientName as string,
-      age: parseInt(formData.patientAge as string),
-      contact: formData.patientContact as string
-    };
-    onPatientAdd(newPatient);
-    onPatientSelect(newPatient.id);
-    setModalOpen(false);
+  const handleAddPatient = async (formData: FormData): Promise<void> => {
+    try {
+      const age = parseInt(formData.patientAge as string, 10);
+      
+      // Validate age
+      if (isNaN(age) || age < 0 || age > 150) {
+        throw new Error('Please enter a valid age between 0 and 150');
+      }
+      
+      const newPatient = {
+        name: formData.patientName as string,
+        age: age,
+        contact: formData.patientContact as string
+      };
+      
+      await (onPatientAdd as (patient: Omit<Patient, 'id'>) => Promise<void>)(newPatient);
+      setModalOpen(false);
+    } catch (error) {
+      console.error('Error adding patient:', error);
+    }
   };
 
   return (
@@ -57,7 +67,7 @@ const PatientSelector: React.FC<PatientSelectorProps> = ({
             getOptionLabel={(option) => option.name}
             value={patients.find(p => p.id === selectedPatient) || null}
             onChange={(event, newValue) => {
-              onPatientSelect(newValue ? newValue.id : '');
+              onPatientSelect(newValue?.id || '');
             }}
             renderInput={(params) => (
               <TextField

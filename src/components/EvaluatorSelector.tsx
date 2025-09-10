@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import Modal from './Modal';
-import { EvaluatorSelectorProps, Evaluator, FormData } from '../types';
+import { EvaluatorSelectorProps, FormData, Evaluator } from '../types';
 
 const EvaluatorSelector: React.FC<EvaluatorSelectorProps> = ({ 
   evaluators, 
@@ -18,15 +18,17 @@ const EvaluatorSelector: React.FC<EvaluatorSelectorProps> = ({
 }) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
-  const handleAddEvaluator = (formData: FormData): void => {
-    const newEvaluator: Evaluator = {
-      id: Date.now(),
-      name: formData.evaluatorName as string,
-      contact: formData.evaluatorContact as string
-    };
-    onEvaluatorAdd(newEvaluator);
-    onEvaluatorSelect(newEvaluator.id);
-    setModalOpen(false);
+  const handleAddEvaluator = async (formData: FormData): Promise<void> => {
+    try {
+      const newEvaluator = {
+        name: formData.evaluatorName as string,
+        contact: formData.evaluatorContact as string
+      };
+      await (onEvaluatorAdd as (evaluator: Omit<Evaluator, 'id'>) => Promise<void>)(newEvaluator);
+      setModalOpen(false);
+    } catch (error) {
+      console.error('Error adding evaluator:', error);
+    }
   };
 
   return (
@@ -52,7 +54,7 @@ const EvaluatorSelector: React.FC<EvaluatorSelectorProps> = ({
             getOptionLabel={(option) => option.name}
             value={evaluators.find(e => e.id === selectedEvaluator) || null}
             onChange={(event, newValue) => {
-              onEvaluatorSelect(newValue ? newValue.id : '');
+              onEvaluatorSelect(newValue?.id || '');
             }}
             renderInput={(params) => (
               <TextField

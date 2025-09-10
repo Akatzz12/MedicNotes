@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -28,12 +28,12 @@ const PatientDetailModal: React.FC<PatientDetailModalProps> = ({ open, onClose, 
   const [expanded, setExpanded] = useState<string | false>(false);
   
   // Get all records for this patient, sorted by date (latest first)
-  const patientRecords = useMemo(() => {
+  const patientRecords = (() => {
     if (!record) return [];
     return allRecords
       .filter(r => r.patientId === record.patientId)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [allRecords, record]);
+  })();
 
   if (!record) return null;
 
@@ -108,13 +108,13 @@ const PatientDetailModal: React.FC<PatientDetailModalProps> = ({ open, onClose, 
             </Box>
           </Grid>
 
-          {/* Evaluator Information */}
+          {/* Doctor Information */}
           <Grid item xs={12} md={6}>
             <Typography variant="subtitle1" gutterBottom sx={{ color: 'primary.main', fontWeight: 600 }}>
-              Evaluator Information
+              Doctor Information
             </Typography>
             <Box sx={{ mb: 1.5 }}>
-              <Typography variant="body2" color="text.secondary">Latest Evaluator</Typography>
+              <Typography variant="body2" color="text.secondary">Latest Doctor</Typography>
               <Typography variant="body1" sx={{ fontWeight: 500 }}>{latestRecord.evaluatorName}</Typography>
             </Box>
             <Box sx={{ mb: 1.5 }}>
@@ -197,7 +197,7 @@ const PatientDetailModal: React.FC<PatientDetailModalProps> = ({ open, onClose, 
                           </Typography>
                         </Box>
                         <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
-                          Evaluator: {visitRecord.evaluatorName}
+                          Doctor: {visitRecord.evaluatorName}
                         </Typography>
                         <Box sx={{ 
                           p: 1, 

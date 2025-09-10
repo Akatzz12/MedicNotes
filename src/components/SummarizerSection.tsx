@@ -10,6 +10,7 @@ import {
 import { Save as SaveIcon } from '@mui/icons-material';
 import { SummarizerSectionProps } from '../types';
 import { useAppContext } from '../context/AppContext';
+import { apiService } from '../services/api';
 
 const SummarizerSection: React.FC<SummarizerSectionProps> = ({ transcriptionText }) => {
   const [summary, setSummary] = useState<string>('');
@@ -31,33 +32,6 @@ const SummarizerSection: React.FC<SummarizerSectionProps> = ({ transcriptionText
   } = useAppContext();
 
 
-  // Initialize OpenAI client
-  const getOpenAIClient = async (): Promise<any> => {
-    try {
-      const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
-      
-      console.log('API Key check:', {
-        hasApiKey: !!apiKey,
-        apiKeyLength: apiKey ? apiKey.length : 0,
-        apiKeyStart: apiKey ? apiKey.substring(0, 10) + '...' : 'none',
-        isDefaultValue: apiKey === 'your_openai_api_key_here'
-      });
-      
-      if (!apiKey || apiKey === 'your_openai_api_key_here') {
-        console.log('API key not configured or is default value');
-        return null;
-      }
-      
-      const { default: OpenAI } = await import('openai');
-      return new OpenAI({
-        apiKey: apiKey,
-        dangerouslyAllowBrowser: true 
-      });
-    } catch (error) {
-      console.error('Failed to initialize OpenAI client:', error);
-      return null;
-    }
-  };
 
   const getButtonText = (): string => {
     if (isLoading) return 'Processing...';
@@ -70,59 +44,23 @@ const SummarizerSection: React.FC<SummarizerSectionProps> = ({ transcriptionText
       return;
     }
 
-    // Stop recording automatically when summarize is clicked
     stopRecording();
 
     setIsLoading(true);
     setError('');
 
     try {
-      // Get OpenAI client
-      const openai = await getOpenAIClient();
-      if (!openai) {
-        throw new Error('OpenAI API key not configured. Please add your API key to the .env file.');
+      const response = await apiService.summarizeText(transcriptionText);
+      
+      setSummary(response.summary);
+      
+      try {
+        const keyPointsResponse = await apiService.extractKeyPoints(transcriptionText);
+        setNotes(keyPointsResponse.key_points);
+      } catch (keyPointsError) {
+        console.error('Error extracting key points:', keyPointsError);
+        setNotes('');
       }
-
-      // Call OpenAI API to improve the transcription
-      const response = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content: "You are a medical transcription assistant. Your task is to improve the formatting and clarity of medical speech-to-text transcriptions. Only reformat and improve the existing text - do not add any new information, diagnoses, or medical advice. Focus on proper grammar, punctuation, and medical terminology formatting."
-          },
-          {
-            role: "user",
-            content: `Please improve the formatting and clarity of this medical transcription while keeping all the original information intact:\n\n${transcriptionText}`
-          }
-        ],
-        max_tokens: 500,
-        temperature: 0.3
-      });
-
-      const improvedText = response.choices[0]?.message?.content || transcriptionText;
-      
-      // Extract 2-3 key points from the improved text
-      const keyPointsResponse = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content: "You are a medical assistant. Extract 2-3 key points from the given medical text. Return only the key points in bullet format, without adding any new information."
-          },
-          {
-            role: "user",
-            content: `Extract 2-3 key points from this medical text:\n\n${improvedText}`
-          }
-        ],
-        max_tokens: 200,
-        temperature: 0.3
-      });
-
-      const keyPoints = keyPointsResponse.choices[0]?.message?.content || "• Key points could not be extracted";
-      
-      setSummary(improvedText);
-      setNotes(keyPoints);
     } catch (error) {
       console.error('Error generating summary:', error);
       setError(error instanceof Error ? error.message : 'Failed to generate summary. Please try again.');
@@ -131,9 +69,17 @@ const SummarizerSection: React.FC<SummarizerSectionProps> = ({ transcriptionText
     }
   };
 
-  // Handle saving the summarized record
-  const handleSaveRecord = (): void => {
-    if (!summary || !notes || !selectedPatient || !selectedEvaluator) {
+  const handleSaveRecord = async (): Promise<void> => {
+    console.log('Save record validation:', {
+      summary: !!summary,
+      notes: notes, 
+      selectedPatient,
+      selectedEvaluator,
+      patientType: typeof selectedPatient,
+      evaluatorType: typeof selectedEvaluator
+    });
+    
+    if (!summary || selectedPatient === '' || selectedEvaluator === '') {
       setError('Please complete assessment and ensure student and doctor are selected');
       return;
     }
@@ -141,39 +87,55 @@ const SummarizerSection: React.FC<SummarizerSectionProps> = ({ transcriptionText
     const patient = patients.find(p => p.id === selectedPatient);
     const evaluator = evaluators.find(e => e.id === selectedEvaluator);
 
+    console.log('Patient lookup:', {
+      selectedPatient,
+      patients: patients.map(p => ({ id: p.id, name: p.name })),
+      foundPatient: patient
+    });
+
+    console.log('Evaluator lookup:', {
+      selectedEvaluator,
+      evaluators: evaluators.map(e => ({ id: e.id, name: e.name })),
+      foundEvaluator: evaluator
+    });
+
     if (!patient || !evaluator) {
       setError('Student or doctor not found');
       return;
     }
 
     const newRecord = {
-      patientId: patient.id,
+      patientId: patient.id || 0,
       patientName: patient.name,
       patientAge: patient.age,
       evaluatorName: evaluator.name,
       evaluatorContact: evaluator.contact,
-      date: new Date().toISOString(),
+      date: new Date().toISOString(), // ISO timestamp - backend will calculate visit count
       transcriptionText: transcriptionText,
       aiSummary: summary,
       keyPoints: notes,
       duration: Math.ceil(transcriptionText.split(' ').length / 2) 
     };
 
-    addPatientRecord(newRecord);
-    setSaveSuccess(true);
-    setError('');
+    try {
+      await addPatientRecord(newRecord);
+      setSaveSuccess(true);
+      setError('');
 
-    // Clear all fields after successful save
-    setSummary('');
-    setNotes('');
-    clearTranscription();
-    setSelectedPatient(''); 
-    setSelectedEvaluator(''); 
+      // Clear all fields after successful save
+      setSummary('');
+      setNotes('');
+      clearTranscription();
+      setSelectedPatient(''); 
+      setSelectedEvaluator(''); 
 
-    // Clear success message after 3 seconds
-    setTimeout(() => {
-      setSaveSuccess(false);
-    }, 3000);
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSaveSuccess(false);
+      }, 3000);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to save patient record');
+    }
   };
 
 

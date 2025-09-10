@@ -1,27 +1,26 @@
 export interface Patient {
-  id: number;
+  id?: number;
   name: string;
   age: number;
   contact: string;
 }
 
 export interface PatientRecord {
-  id: number;
+  id?: number;
   patientId: number;
   patientName: string;
   patientAge: number;
   evaluatorName: string;
   evaluatorContact: string;
-  date: string;
+  date: string; 
   transcriptionText: string;
   aiSummary: string;
-  keyPoints: string;
-  duration: number; // in minutes
-  visitCount?: number; // Optional for grouped records
+  keyPoints?: string;
+  duration: number;
 }
 
 export interface Evaluator {
-  id: number;
+  id?: number;
   name: string;
   contact: string;
 }
@@ -38,34 +37,31 @@ export interface FormData {
 }
 
 export interface AppContextType {
-  // State
   patients: Patient[];
   selectedPatient: number | string;
   evaluators: Evaluator[];
   selectedEvaluator: number | string;
   transcriptionText: string;
   patientRecords: PatientRecord[];
-  
-  // Patient functions
-  addPatient: (patient: Patient) => void;
-  updatePatient: (patientId: number, updatedPatient: Partial<Patient>) => void;
-  deletePatient: (patientId: number) => void;
+  patientsLoading: boolean;
+  patientsError: string;
+  evaluatorsLoading: boolean;
+  evaluatorsError: string;
+  patientRecordsLoading: boolean;
+  patientRecordsError: string;
+  loadPatients: () => Promise<void>;
+  loadEvaluators: () => Promise<void>;
+  loadPatientRecords: () => Promise<void>;
+  addPatient: (patient: Omit<Patient, 'id'>) => Promise<void>;
   setSelectedPatient: (patientId: number | string) => void;
-  
-  // Evaluator functions
-  addEvaluator: (evaluator: Evaluator) => void;
-  updateEvaluator: (evaluatorId: number, updatedEvaluator: Partial<Evaluator>) => void;
-  deleteEvaluator: (evaluatorId: number) => void;
+  addEvaluator: (evaluator: Omit<Evaluator, 'id'>) => Promise<void>;
   setSelectedEvaluator: (evaluatorId: number | string) => void;
-  
-  // Transcription functions
   updateTranscription: (text: string) => void;
   clearTranscription: () => void;
   stopRecording: () => void;
-  
-  // Patient record functions
-  addPatientRecord: (record: Omit<PatientRecord, 'id'>) => void;
-  deletePatientRecord: (recordId: number) => void;
+  addPatientRecord: (record: Omit<PatientRecord, 'id'>) => Promise<void>;
+  summarizeText: (text: string) => Promise<string>;
+  extractKeyPoints: (text: string) => Promise<string>;
 }
 
 export interface ModalProps {
@@ -81,14 +77,14 @@ export interface PatientSelectorProps {
   patients: Patient[];
   selectedPatient: number | string;
   onPatientSelect: (patientId: number | string) => void;
-  onPatientAdd: (patient: Patient) => void;
+  onPatientAdd: (patient: Omit<Patient, 'id'>) => Promise<void>;
 }
 
 export interface EvaluatorSelectorProps {
   evaluators: Evaluator[];
   selectedEvaluator: number | string;
   onEvaluatorSelect: (evaluatorId: number | string) => void;
-  onEvaluatorAdd: (evaluator: Evaluator) => void;
+  onEvaluatorAdd: (evaluator: Omit<Evaluator, 'id'>) => Promise<void>;
 }
 
 export interface RecordingSectionProps {

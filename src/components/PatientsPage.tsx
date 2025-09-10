@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Typography, Box } from '@mui/material';
+import { Container, Typography, Box, Alert, CircularProgress, Button } from '@mui/material';
 import { Person as PersonIcon } from '@mui/icons-material';
 import PatientList from './PatientList';
 import PatientDetailModal from './PatientDetailModal';
@@ -10,7 +10,12 @@ import { useAppContext } from '../context/AppContext';
 const PatientsPage: React.FC = () => {
   const [selectedRecord, setSelectedRecord] = useState<PatientRecord | null>(null);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const { patientRecords } = useAppContext();
+  const { 
+    patientRecords, 
+    patientRecordsLoading, 
+    patientRecordsError, 
+    loadPatientRecords 
+  } = useAppContext();
 
   const handleRecordClick = (record: PatientRecord) => {
     setSelectedRecord(record);
@@ -55,10 +60,32 @@ const PatientsPage: React.FC = () => {
         </Box>
       </Box>
 
-      <PatientList 
-        records={patientRecords}
-        onRecordClick={handleRecordClick}
-      />
+      {/* Error Alert */}
+      {patientRecordsError && (
+        <Alert 
+          severity="error" 
+          sx={{ mb: 2 }}
+          action={
+            <Button color="inherit" size="small" onClick={loadPatientRecords}>
+              Retry
+            </Button>
+          }
+        >
+          {patientRecordsError}
+        </Alert>
+      )}
+
+      {/* Loading State */}
+      {patientRecordsLoading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <PatientList 
+          records={patientRecords}
+          onRecordClick={handleRecordClick}
+        />
+      )}
 
       <PatientDetailModal
         open={modalOpen}

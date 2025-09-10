@@ -10,7 +10,6 @@ import { Mic as MicIcon, Stop as StopIcon } from '@mui/icons-material';
 import { RecordingSectionProps } from '../types';
 import { useAppContext } from '../context/AppContext';
 
-// Web Speech API types
 interface SpeechRecognition extends EventTarget {
   continuous: boolean;
   interimResults: boolean;
@@ -67,7 +66,6 @@ const RecordingSection: React.FC<RecordingSectionProps> = ({ onTranscriptionUpda
   const { transcriptionText, updateTranscription } = useAppContext();
   const finalTranscriptRef = useRef<string>('');
 
-  // Check browser support on component mount
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -79,12 +77,10 @@ const RecordingSection: React.FC<RecordingSectionProps> = ({ onTranscriptionUpda
     }
   }, []);
 
-  // Notify parent component when transcription changes
   useEffect(() => {
     onTranscriptionUpdate(transcriptionText);
   }, [transcriptionText, onTranscriptionUpdate]);
 
-  // Listen for stop recording event
   useEffect(() => {
     const handleStopRecording = () => {
       if (isRecording && recognitionRef.current) {
@@ -99,7 +95,6 @@ const RecordingSection: React.FC<RecordingSectionProps> = ({ onTranscriptionUpda
     };
   }, [isRecording]);
 
-  // Initialize speech recognition
   const initializeSpeechRecognition = (): SpeechRecognition | null => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -144,16 +139,13 @@ const RecordingSection: React.FC<RecordingSectionProps> = ({ onTranscriptionUpda
     return recognition;
   };
 
-  // Handle recording start/stop
   const handleRecordingToggle = (): void => {
     if (isRecording) {
-      // Stop recording
       if (recognitionRef.current) {
         recognitionRef.current.stop();
       }
       setIsRecording(false);
     } else {
-      // Start recording
       setError('');
       updateTranscription('');
       finalTranscriptRef.current = ''; 
@@ -167,7 +159,6 @@ const RecordingSection: React.FC<RecordingSectionProps> = ({ onTranscriptionUpda
     }
   };
 
-  // Cleanup on component unmount
   useEffect(() => {
     return () => {
       if (recognitionRef.current) {

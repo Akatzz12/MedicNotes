@@ -1,8 +1,8 @@
-import React, { useMemo, useState } from 'react';
-import { Container, Typography, Box, Grid, Card, CardContent, Avatar, Button, TextField, InputAdornment } from '@mui/material';
+import React, { useState } from 'react';
+import { Container, Typography, Box, Grid, Card, CardContent, Avatar, Button, TextField, InputAdornment, Alert, CircularProgress } from '@mui/material';
 import { Person as PersonIcon, Add as AddIcon, Search as SearchIcon } from '@mui/icons-material';
 import Modal from './Modal';
-import { FormData, Patient } from '../types';
+import { FormData } from '../types';
 import { useAppContext } from '../context/AppContext';
 
 
@@ -10,25 +10,38 @@ const PatientInfoPage: React.FC = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const { patients, addPatient } = useAppContext();
+  const { patients, addPatient, patientsLoading, patientsError, loadPatients } = useAppContext();
 
-  const getInitials = (name: string) => {
+  const getInitials = (name: string | undefined) => {
+    if (!name || typeof name !== 'string') {
+      return '??';
+    }
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
-  const handleAddPatient = (formData: FormData): void => {
-    const newPatient: Patient = {
-      id: Date.now(),
-      name: formData.patientName as string,
-      age: parseInt(formData.patientAge as string),
-      contact: formData.patientContact as string
-    };
-    addPatient(newPatient);
-    setModalOpen(false);
+  const handleAddPatient = async (formData: FormData): Promise<void> => {
+    try {
+      const age = parseInt(formData.patientAge as string, 10);
+      
+      // Validate age
+      if (isNaN(age) || age < 0 || age > 150) {
+        throw new Error('Please enter a valid age between 0 and 150');
+      }
+      
+      const newPatient = {
+        name: formData.patientName as string,
+        age: age,
+        contact: formData.patientContact as string
+      };
+      
+      await addPatient(newPatient);
+      setModalOpen(false);
+    } catch (error) {
+      console.error('Error adding patient:', error);
+    }
   };
 
-  // Filter patients based on search term
-  const filteredPatients = useMemo(() => {
+  const filteredPatients = (() => {
     if (!searchTerm.trim()) return patients;
 
     const term = searchTerm.toLowerCase();
@@ -37,7 +50,7 @@ const PatientInfoPage: React.FC = () => {
       String(patient.age).includes(term) ||
       patient.contact.toLowerCase().includes(term)
     );
-  }, [patients, searchTerm]);
+  })();
 
   return (
     <Container maxWidth="lg" sx={{ py: 2, px: { xs: 2, sm: 3 } }}>
@@ -83,6 +96,21 @@ const PatientInfoPage: React.FC = () => {
         </Box>
       </Box>
 
+      {/* Error Alert */}
+      {patientsError && (
+        <Alert 
+          severity="error" 
+          sx={{ mb: 2 }}
+          action={
+            <Button color="inherit" size="small" onClick={loadPatients}>
+              Retry
+            </Button>
+          }
+        >
+          {patientsError}
+        </Alert>
+      )}
+
       {/* Search Bar */}
       <Box sx={{ mb: 3 }}>
         <TextField
@@ -111,8 +139,17 @@ const PatientInfoPage: React.FC = () => {
         {filteredPatients.length} student{filteredPatients.length !== 1 ? 's' : ''} found
       </Typography>
 
-      <Grid container spacing={2}>
-        {filteredPatients.map((patient) => (
+      {/* Loading State */}
+      {patientsLoading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+          <CircularProgress />
+        </Box>
+      )}
+
+      {/* Patients Grid */}
+      {!patientsLoading && (
+        <Grid container spacing={2}>
+          {filteredPatients.map((patient) => (
           <Grid item xs={12} sm={6} lg={4} key={patient.id}>
             <Card sx={{ 
               height: '100%',
@@ -155,8 +192,9 @@ const PatientInfoPage: React.FC = () => {
               </CardContent>
             </Card>
           </Grid>
-        ))}
-      </Grid>
+          ))}
+        </Grid>
+      )}
 
       <Modal
         open={modalOpen}

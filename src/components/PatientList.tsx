@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   TextField,
@@ -28,7 +28,7 @@ const PatientList: React.FC<PatientListProps> = ({ records, onRecordClick }) => 
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   // Group records by patient and get latest summary for each
-  const groupedRecords = useMemo(() => {
+  const groupedRecords = (() => {
     const grouped = records.reduce((acc, record) => {
       const key = record.patientId;
       if (!acc[key]) {
@@ -46,9 +46,9 @@ const PatientList: React.FC<PatientListProps> = ({ records, onRecordClick }) => 
         visitCount: sorted.length
       };
     });
-  }, [records]);
+  })();
 
-  const filteredRecords = useMemo(() => {
+  const filteredRecords = (() => {
     if (!searchTerm.trim()) return groupedRecords;
     
     const term = searchTerm.toLowerCase();
@@ -57,7 +57,7 @@ const PatientList: React.FC<PatientListProps> = ({ records, onRecordClick }) => 
       record.evaluatorName.toLowerCase().includes(term) ||
       record.aiSummary.toLowerCase().includes(term)
     );
-  }, [groupedRecords, searchTerm]);
+  })();
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -70,7 +70,10 @@ const PatientList: React.FC<PatientListProps> = ({ records, onRecordClick }) => 
     });
   };
 
-  const getInitials = (name: string) => {
+  const getInitials = (name: string | undefined) => {
+    if (!name || typeof name !== 'string') {
+      return '??';
+    }
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
@@ -163,7 +166,7 @@ const PatientList: React.FC<PatientListProps> = ({ records, onRecordClick }) => 
                   </IconButton>
                 </Box>
 
-                {/* Evaluator Info */}
+                {/* Doctor Info */}
                 <Box sx={{ mb: 2 }}>
                   <Typography variant="body2" color="text.secondary" gutterBottom>
                     Evaluated by

@@ -32,10 +32,4 @@ A React frontend application for recording and evaluating medical notes with a m
    ```bash
    npm start
    ```
-
-4. Open your browser and navigate to `http://localhost:3000`
-
-## Environment Variables
-Change .env.exampple to .env and replace your_openai_api_key_here with actual open api key
-
-
+   
