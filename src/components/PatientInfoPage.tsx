@@ -206,7 +206,7 @@ const PatientInfoPage: React.FC = () => {
           { name: 'patientContact', label: 'Student Contact', type: 'text', required: true }
         ]}
         onSubmit={handleAddPatient}
-        submitButtonText="Add Patient"
+        submitButtonText="Add Student"
       />
     </Container>
   );

@@ -198,7 +198,7 @@ const PatientList: React.FC<PatientListProps> = ({ records, onRecordClick }) => 
                 {/* Summary Preview */}
                 <Box>
                   <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Latest Summary
+                    Latest Assessments
                   </Typography>
                   <Typography 
                     variant="body2" 

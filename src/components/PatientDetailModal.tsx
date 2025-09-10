@@ -130,7 +130,7 @@ const PatientDetailModal: React.FC<PatientDetailModalProps> = ({ open, onClose, 
           {/* Latest Summary and Key Points */}
           <Grid item xs={12} md={8}>
             <Typography variant="subtitle1" gutterBottom sx={{ color: 'primary.main', fontWeight: 600, mb: 0.5 }}>
-              Latest Summary
+              Latest Assessments
             </Typography>
             <Box sx={{ 
               p: 1, 
