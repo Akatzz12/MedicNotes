@@ -180,7 +180,7 @@ const PatientDetailModal: React.FC<PatientDetailModalProps> = ({ open, onClose, 
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <HistoryIcon color="primary" fontSize="small" />
                     <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.85rem' }}>
-                      All Summaries ({patientRecords.length})
+                      All Assessments ({patientRecords.length})
                     </Typography>
                   </Box>
                 </AccordionSummary>
