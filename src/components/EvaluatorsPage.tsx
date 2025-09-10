@@ -38,10 +38,13 @@ const EvaluatorsPage: React.FC = () => {
     if (!searchTerm.trim()) return evaluators;
     
     const term = searchTerm.toLowerCase();
-    return evaluators.filter(evaluator => 
-      evaluator.name.toLowerCase().includes(term) ||
-      evaluator.contact.toLowerCase().includes(term)
-    );
+    return evaluators.filter(evaluator => {
+      const name = String(evaluator?.name || '');
+      const contact = String(evaluator?.contact || '');
+      
+      return name.toLowerCase().includes(term) ||
+             contact.toLowerCase().includes(term);
+    });
   })();
 
   return (

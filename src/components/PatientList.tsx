@@ -52,11 +52,15 @@ const PatientList: React.FC<PatientListProps> = ({ records, onRecordClick }) => 
     if (!searchTerm.trim()) return groupedRecords;
     
     const term = searchTerm.toLowerCase();
-    return groupedRecords.filter(record => 
-      record.patientName.toLowerCase().includes(term) ||
-      record.evaluatorName.toLowerCase().includes(term) ||
-      record.aiSummary.toLowerCase().includes(term)
-    );
+    return groupedRecords.filter(record => {
+      const patientName = String(record?.patientName || '');
+      const evaluatorName = String(record?.evaluatorName || '');
+      const aiSummary = String(record?.aiSummary || '');
+      
+      return patientName.toLowerCase().includes(term) ||
+             evaluatorName.toLowerCase().includes(term) ||
+             aiSummary.toLowerCase().includes(term);
+    });
   })();
 
   const formatDate = (dateString: string) => {

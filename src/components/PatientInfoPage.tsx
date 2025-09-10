@@ -45,11 +45,15 @@ const PatientInfoPage: React.FC = () => {
     if (!searchTerm.trim()) return patients;
 
     const term = searchTerm.toLowerCase();
-    return patients.filter(patient => 
-      patient.name.toLowerCase().includes(term) ||
-      String(patient.age).includes(term) ||
-      patient.contact.toLowerCase().includes(term)
-    );
+    return patients.filter(patient => {
+      const name = String(patient?.name || '');
+      const contact = String(patient?.contact || '');
+      const age = String(patient?.age || '');
+      
+      return name.toLowerCase().includes(term) ||
+             age.includes(term) ||
+             contact.toLowerCase().includes(term);
+    });
   })();
 
   return (
