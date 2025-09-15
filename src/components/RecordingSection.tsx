@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Typography,
   Box,
@@ -9,163 +9,60 @@ import {
 import { Mic as MicIcon, Stop as StopIcon } from '@mui/icons-material';
 import { RecordingSectionProps } from '../types';
 import { useAppContext } from '../context/AppContext';
-
-interface SpeechRecognition extends EventTarget {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  start(): void;
-  stop(): void;
-  abort(): void;
-  onresult: ((event: SpeechRecognitionEvent) => void) | null;
-  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
-  onend: (() => void) | null;
-}
-
-interface SpeechRecognitionEvent extends Event {
-  resultIndex: number;
-  results: SpeechRecognitionResultList;
-}
-
-interface SpeechRecognitionResultList {
-  length: number;
-  item(index: number): SpeechRecognitionResult;
-  [index: number]: SpeechRecognitionResult;
-}
-
-interface SpeechRecognitionResult {
-  length: number;
-  item(index: number): SpeechRecognitionAlternative;
-  [index: number]: SpeechRecognitionAlternative;
-  isFinal: boolean;
-}
-
-interface SpeechRecognitionAlternative {
-  transcript: string;
-  confidence: number;
-}
-
-interface SpeechRecognitionErrorEvent extends Event {
-  error: string;
-  message: string;
-}
-
-declare global {
-  interface Window {
-    webkitSpeechRecognition: new () => SpeechRecognition;
-    SpeechRecognition: new () => SpeechRecognition;
-  }
-}
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 const RecordingSection: React.FC<RecordingSectionProps> = ({ onTranscriptionUpdate }) => {
-  const [isRecording, setIsRecording] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
-  const [isSupported, setIsSupported] = useState<boolean>(true);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
-  
   const { transcriptionText, updateTranscription } = useAppContext();
-  const finalTranscriptRef = useRef<string>('');
+
+  const {
+    finalTranscript,
+    interimTranscript,
+    listening,
+    browserSupportsSpeechRecognition,
+    resetTranscript
+  } = useSpeechRecognition();
 
   useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      setIsSupported(false);
+    if (!browserSupportsSpeechRecognition) {
       setError('Speech recognition is not supported in this browser. Please use Chrome or Edge.');
     } else {
-      setIsSupported(true);
       setError('');
     }
-  }, []);
+  }, [browserSupportsSpeechRecognition]);
 
   useEffect(() => {
-    onTranscriptionUpdate(transcriptionText);
-  }, [transcriptionText, onTranscriptionUpdate]);
+    const combined = `${finalTranscript}${interimTranscript ? ` ${interimTranscript}` : ''}`.trim();
+    updateTranscription(combined);
+    onTranscriptionUpdate(combined);
+  }, [finalTranscript, interimTranscript, updateTranscription, onTranscriptionUpdate]);
 
   useEffect(() => {
     const handleStopRecording = () => {
-      if (isRecording && recognitionRef.current) {
-        recognitionRef.current.stop();
-        setIsRecording(false);
+      if (listening) {
+        SpeechRecognition.stopListening();
       }
     };
 
     window.addEventListener('stopRecording', handleStopRecording);
     return () => {
       window.removeEventListener('stopRecording', handleStopRecording);
-    };
-  }, [isRecording]);
-
-  const initializeSpeechRecognition = (): SpeechRecognition | null => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      setError('Speech recognition not supported');
-      return null;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = 'en-US';
-
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      let interimTranscript = '';
-
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          // Add final transcript to our permanent storage
-          finalTranscriptRef.current += transcript;
-        } else {
-          interimTranscript += transcript;
-        }
+      if (listening) {
+        SpeechRecognition.stopListening();
       }
-
-      
-      const displayText = finalTranscriptRef.current + (interimTranscript ? ` ${interimTranscript}` : '');
-      updateTranscription(displayText);
     };
-
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      console.error('Speech recognition error:', event.error);
-      setError(`Speech recognition error: ${event.error}`);
-      setIsRecording(false);
-    };
-
-    recognition.onend = () => {
-      setIsRecording(false);
-      updateTranscription(finalTranscriptRef.current);
-    };
-
-    return recognition;
-  };
+  }, [listening]);
 
   const handleRecordingToggle = (): void => {
-    if (isRecording) {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-      setIsRecording(false);
+    if (listening) {
+      SpeechRecognition.stopListening();
     } else {
       setError('');
+      resetTranscript();
       updateTranscription('');
-      finalTranscriptRef.current = ''; 
-      
-      const recognition = initializeSpeechRecognition();
-      if (recognition) {
-        recognitionRef.current = recognition;
-        recognition.start();
-        setIsRecording(true);
-      }
+      SpeechRecognition.startListening({ continuous: true, interimResults: true, language: 'en-US', clearTranscriptOnListen: true });
     }
   };
-
-  useEffect(() => {
-    return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.abort();
-      }
-    };
-  }, []);
 
   return (
     <Box sx={{ mb: 3 }}>
@@ -180,11 +77,11 @@ const RecordingSection: React.FC<RecordingSectionProps> = ({ onTranscriptionUpda
           Record Your Evaluation
         </Typography>
         <Button
-          variant={isRecording ? "contained" : "outlined"}
-          color={isRecording ? "error" : "warning"}
-          startIcon={isRecording ? <StopIcon /> : <MicIcon />}
+          variant={listening ? "contained" : "outlined"}
+          color={listening ? "error" : "warning"}
+          startIcon={listening ? <StopIcon /> : <MicIcon />}
           onClick={handleRecordingToggle}
-          disabled={!isSupported}
+          disabled={!browserSupportsSpeechRecognition}
           size="medium"
           sx={{ 
             px: 3,
@@ -196,7 +93,7 @@ const RecordingSection: React.FC<RecordingSectionProps> = ({ onTranscriptionUpda
             minWidth: 180
           }}
         >
-          {isRecording ? 'Stop Recording' : 'Start Recording'}
+          {listening ? 'Stop Recording' : 'Start Recording'}
         </Button>
       </Box>
 
@@ -212,7 +109,7 @@ const RecordingSection: React.FC<RecordingSectionProps> = ({ onTranscriptionUpda
       )}
 
       {/* Browser Support Warning */}
-      {!isSupported && (
+      {!browserSupportsSpeechRecognition && (
         <Alert severity="warning" sx={{ mb: 2 }}>
           Speech recognition is not supported in this browser. Please use Chrome or Edge for the best experience.
         </Alert>
@@ -253,7 +150,7 @@ const RecordingSection: React.FC<RecordingSectionProps> = ({ onTranscriptionUpda
             fontSize: '0.9rem',
             textAlign: 'center'
           }}>
-            {isRecording ? (
+            {listening ? (
               <Box>
                 <Typography variant="body1" sx={{ mb: 1, fontWeight: 500 }}>
                   🎤 Listening... Speak clearly into your microphone

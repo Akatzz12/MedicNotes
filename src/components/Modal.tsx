@@ -41,7 +41,7 @@ const Modal: React.FC<ModalProps> = ({
     // Special validation for numeric fields
     if (fieldName === 'patientAge' || fieldName === 'patientContact' || fieldName === 'evaluatorContact') {
       const stringValue = value.toString();
-      let numericValue;
+      let numericValue: string;
       
       if (fieldName === 'patientAge') {
         // Patient age: only allow digits and limit to 3 characters
