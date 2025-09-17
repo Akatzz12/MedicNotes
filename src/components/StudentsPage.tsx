@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Container, Typography, Box, Alert, CircularProgress, Button } from '@mui/material';
 import { Person as PersonIcon } from '@mui/icons-material';
-import PatientList from './PatientList';
-import PatientDetailModal from './PatientDetailModal';
+import PatientList from './StudentList';
+import StudentDetailModal from './StudentDetailModal';
 import { PatientRecord } from '../types';
 import { useAppContext } from '../context/AppContext';
 
 
-const PatientsPage: React.FC = () => {
+const StudentsPage: React.FC = () => {
   const [selectedRecord, setSelectedRecord] = useState<PatientRecord | null>(null);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const { 
@@ -87,7 +87,7 @@ const PatientsPage: React.FC = () => {
         />
       )}
 
-      <PatientDetailModal
+      <StudentDetailModal
         open={modalOpen}
         onClose={handleCloseModal}
         record={selectedRecord}
@@ -99,4 +99,4 @@ const PatientsPage: React.FC = () => {
   );
 };
 
-export default PatientsPage;
+export default StudentsPage;

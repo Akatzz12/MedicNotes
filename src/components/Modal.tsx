@@ -21,14 +21,13 @@ const Modal: React.FC<ModalProps> = ({
   const [formData, setFormData] = useState<FormData>({});
   
   const getPlaceholder = (fieldName: string): string => {
-    if (fieldName === 'patientAge') return 'Enter age';
-    if (fieldName === 'patientContact' || fieldName === 'evaluatorContact') return 'Enter contact number';
+    if (fieldName === 'studentAge') return 'Enter age';
+    if (fieldName === 'studentContact' || fieldName === 'instructorContact') return 'Enter contact number';
     return '';
   };
 
   useEffect(() => {
     if (open) {
-      // Reset form data when modal opens
       const initialData: FormData = {};
       fields.forEach(field => {
         initialData[field.name] = '';
@@ -38,16 +37,13 @@ const Modal: React.FC<ModalProps> = ({
   }, [open, fields]);
 
   const handleInputChange = (fieldName: string, value: string | number): void => {
-    // Special validation for numeric fields
-    if (fieldName === 'patientAge' || fieldName === 'patientContact' || fieldName === 'evaluatorContact') {
+    if (fieldName === 'studentAge' || fieldName === 'studentContact' || fieldName === 'instructorContact') {
       const stringValue = value.toString();
       let numericValue: string;
       
-      if (fieldName === 'patientAge') {
-        // Patient age: only allow digits and limit to 3 characters
-        numericValue = stringValue.replace(/\D/g, '').slice(0, 3);
+      if (fieldName === 'studentAge') {
+        numericValue = stringValue.replace(/\D/g, '').slice(0, 2);
       } else {
-        // Contact fields: only allow digits and limit to 10 characters
         numericValue = stringValue.replace(/\D/g, '').slice(0, 10);
       }
       
@@ -76,7 +72,7 @@ const Modal: React.FC<ModalProps> = ({
     if (field.type === 'number' && value && isNaN(Number(value))) {
       return false;
     }
-    if ((field.name === 'patientAge' || field.name === 'patientContact' || field.name === 'evaluatorContact') && value) {
+    if ((field.name === 'studentAge' || field.name === 'studentContact' || field.name === 'instructorContact') && value) {
       const numericValue = value.toString();
       if (!/^\d+$/.test(numericValue) || numericValue.length === 0) {
         return false;

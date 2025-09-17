@@ -133,9 +133,9 @@ class ApiService {
   }
 
   async savePatientRecord(record: Omit<PatientRecord, 'id'>): Promise<PatientRecord> {
-    const recordText = `Patient Record - ${record.date}
-Patient: ${record.patientName} (ID: ${record.patientId}, Age: ${record.patientAge})
-Doctor: ${record.evaluatorName} (${record.evaluatorContact})
+    const recordText = `Student Record - ${record.date}
+Student: ${record.patientName} (ID: ${record.patientId}, Age: ${record.patientAge})
+Instructor: ${record.evaluatorName} (${record.evaluatorContact})
 Transcription: ${record.transcriptionText}
 AI Summary: ${record.aiSummary}
 Key Points: ${record.keyPoints || 'None'}`;
@@ -170,7 +170,7 @@ Key Points: ${record.keyPoints || 'None'}`;
     const patientRecords: PatientRecord[] = [];
     
     history.forEach((entry, index) => {
-      if (entry?.startsWith('Patient Record -')) {
+      if (entry?.startsWith('Student Record -')) {
         const lines = entry.split('\n');
         
         if (lines.length < 6) {
@@ -178,14 +178,14 @@ Key Points: ${record.keyPoints || 'None'}`;
           return;
         }
         
-        const dateLine = lines[0]?.replace('Patient Record - ', '') || '';
+        const dateLine = lines[0]?.replace('Student Record - ', '') || '';
         
         const patientLine = lines[1] || '';
-        const patientRegex = /Patient: (.+) \(ID: (\d+), Age: (\d+)\)/;
+        const patientRegex = /Student: (.+) \(ID: (\d+), Age: (\d+)\)/;
         const patientMatch = patientRegex.exec(patientLine);
         
         const doctorLine = lines[2] || '';
-        const doctorRegex = /Doctor: (.+) \((.+)\)/;
+        const doctorRegex = /Instructor: (.+) \((.+)\)/;
         const doctorMatch = doctorRegex.exec(doctorLine);
         
         if (patientMatch && doctorMatch && lines[3] && lines[4] && lines[5]) {

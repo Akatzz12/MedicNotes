@@ -13,21 +13,21 @@ import { EvaluatorSelectorProps, FormData, Evaluator } from '../types';
 const EvaluatorSelector: React.FC<EvaluatorSelectorProps> = ({ 
   evaluators, 
   selectedEvaluator, 
-  onEvaluatorSelect, 
-  onEvaluatorAdd 
+  onInstructorSelect, 
+  onInstructorAdd 
 }) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
-  const handleAddEvaluator = async (formData: FormData): Promise<void> => {
+  const handleAddInstructor = async (formData: FormData): Promise<void> => {
     try {
-      const newEvaluator = {
-        name: formData.evaluatorName as string,
-        contact: formData.evaluatorContact as string
+      const newInstructor = {
+        name: formData.instructorName as string,
+        contact: formData.instructorContact as string
       };
-      await (onEvaluatorAdd as (evaluator: Omit<Evaluator, 'id'>) => Promise<void>)(newEvaluator);
+      await (onInstructorAdd as (evaluator: Omit<Evaluator, 'id'>) => Promise<void>)(newInstructor);
       setModalOpen(false);
     } catch (error) {
-      console.error('Error adding evaluator:', error);
+      console.error('Error adding instructor:', error);
     }
   };
 
@@ -35,7 +35,7 @@ const EvaluatorSelector: React.FC<EvaluatorSelectorProps> = ({
     <>
       <Box>
         <Typography variant="h6" component="h2" gutterBottom sx={{ mb: 2, color: 'text.primary', fontWeight: 600, fontSize: '1.2rem' }}>
-          Doctor Information
+          Instructor Information
         </Typography>
         <Box sx={{ 
           display: 'flex', 
@@ -54,12 +54,12 @@ const EvaluatorSelector: React.FC<EvaluatorSelectorProps> = ({
             getOptionLabel={(option) => option.name}
             value={evaluators.find(e => e.id === selectedEvaluator) || null}
             onChange={(event, newValue) => {
-              onEvaluatorSelect(newValue?.id || '');
+              onInstructorSelect(newValue?.id || '');
             }}
             renderInput={(params) => (
               <TextField
                 {...params}
-                placeholder="Select Doctor"
+                placeholder="Select Instructor"
                 sx={{
                   backgroundColor: 'white',
                   '& .MuiOutlinedInput-root': {
@@ -91,7 +91,7 @@ const EvaluatorSelector: React.FC<EvaluatorSelectorProps> = ({
                 </Box>
               </Box>
             )}
-            noOptionsText="No doctors found"
+            noOptionsText="No instructors found"
             clearOnEscape
             selectOnFocus
             handleHomeEndKeys
@@ -113,7 +113,7 @@ const EvaluatorSelector: React.FC<EvaluatorSelectorProps> = ({
               }
             }}
           >
-            Add Doctor
+            Add Instructor
           </Button>
         </Box>
       </Box>
@@ -121,12 +121,12 @@ const EvaluatorSelector: React.FC<EvaluatorSelectorProps> = ({
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title="Add New Doctor"
+        title="Add New Instructor"
         fields={[
-          { name: 'evaluatorName', label: 'Doctor Name', type: 'text', required: true },
-          { name: 'evaluatorContact', label: 'Doctor Contact', type: 'text', required: true }
+          { name: 'instructorName', label: 'Instructor Name', type: 'text', required: true },
+          { name: 'instructorContact', label: 'Instructor Contact', type: 'text', required: true }
         ]}
-        onSubmit={handleAddEvaluator}
+        onSubmit={handleAddInstructor}
       />
     </>
   );

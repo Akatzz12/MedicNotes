@@ -6,7 +6,7 @@ import { FormData } from '../types';
 import { useAppContext } from '../context/AppContext';
 
 
-const PatientInfoPage: React.FC = () => {
+const StudentInfoPage: React.FC = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -23,7 +23,6 @@ const PatientInfoPage: React.FC = () => {
     try {
       const age = parseInt(formData.patientAge as string, 10);
       
-      // Validate age
       if (isNaN(age) || age < 0 || age > 150) {
         throw new Error('Please enter a valid age between 0 and 150');
       }
@@ -37,7 +36,7 @@ const PatientInfoPage: React.FC = () => {
       await addPatient(newPatient);
       setModalOpen(false);
     } catch (error) {
-      console.error('Error adding patient:', error);
+      console.error('Error adding student:', error);
     }
   };
 
@@ -100,7 +99,6 @@ const PatientInfoPage: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Error Alert */}
       {patientsError && (
         <Alert 
           severity="error" 
@@ -115,7 +113,6 @@ const PatientInfoPage: React.FC = () => {
         </Alert>
       )}
 
-      {/* Search Bar */}
       <Box sx={{ mb: 3 }}>
         <TextField
           fullWidth
@@ -138,19 +135,16 @@ const PatientInfoPage: React.FC = () => {
         />
       </Box>
 
-      {/* Results */}
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         {filteredPatients.length} student{filteredPatients.length !== 1 ? 's' : ''} found
       </Typography>
 
-      {/* Loading State */}
       {patientsLoading && (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
           <CircularProgress />
         </Box>
       )}
 
-      {/* Patients Grid */}
       {!patientsLoading && (
         <Grid container spacing={2}>
           {filteredPatients.map((patient) => (
@@ -164,7 +158,6 @@ const PatientInfoPage: React.FC = () => {
               }
             }}>
               <CardContent sx={{ p: 2 }}>
-                {/* Header */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                   <Avatar sx={{ 
                     bgcolor: 'primary.main', 
@@ -184,7 +177,6 @@ const PatientInfoPage: React.FC = () => {
                   </Box>
                 </Box>
 
-                {/* Contact Information */}
                 <Box>
                   <Typography variant="body2" color="text.secondary" gutterBottom>
                     Contact
@@ -216,6 +208,5 @@ const PatientInfoPage: React.FC = () => {
   );
 };
 
-export default PatientInfoPage;
-
+export default StudentInfoPage;
 

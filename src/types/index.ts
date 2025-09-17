@@ -76,15 +76,15 @@ export interface ModalProps {
 export interface PatientSelectorProps {
   patients: Patient[];
   selectedPatient: number | string;
-  onPatientSelect: (patientId: number | string) => void;
-  onPatientAdd: (patient: Omit<Patient, 'id'>) => Promise<void>;
+  onStudentSelect: (patientId: number | string) => void;
+  onStudentAdd: (patient: Omit<Patient, 'id'>) => Promise<void>;
 }
 
 export interface EvaluatorSelectorProps {
   evaluators: Evaluator[];
   selectedEvaluator: number | string;
-  onEvaluatorSelect: (evaluatorId: number | string) => void;
-  onEvaluatorAdd: (evaluator: Omit<Evaluator, 'id'>) => Promise<void>;
+  onInstructorSelect: (evaluatorId: number | string) => void;
+  onInstructorAdd: (evaluator: Omit<Evaluator, 'id'>) => Promise<void>;
 }
 
 export interface RecordingSectionProps {

@@ -19,12 +19,12 @@ import {
 } from '@mui/icons-material';
 import { PatientRecord } from '../types';
 
-interface PatientListProps {
+interface StudentListProps {
   records: PatientRecord[];
   onRecordClick: (record: PatientRecord) => void;
 }
 
-const PatientList: React.FC<PatientListProps> = ({ records, onRecordClick }) => {
+const StudentList: React.FC<StudentListProps> = ({ records, onRecordClick }) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   // Group records by patient and get latest summary for each
@@ -87,7 +87,7 @@ const PatientList: React.FC<PatientListProps> = ({ records, onRecordClick }) => 
       <Box sx={{ mb: 3 }}>
         <TextField
           fullWidth
-          placeholder="Search students, doctors, or summaries..."
+          placeholder="Search students, instructors, or summaries..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
@@ -111,7 +111,7 @@ const PatientList: React.FC<PatientListProps> = ({ records, onRecordClick }) => 
         {filteredRecords.length} student{filteredRecords.length !== 1 ? 's' : ''} found
       </Typography>
 
-      {/* Patient Records Grid */}
+      {/* Student Records Grid */}
       <Grid container spacing={2}>
         {filteredRecords.map((record) => (
           <Grid item xs={12} sm={6} lg={4} key={record.id}>
@@ -170,10 +170,10 @@ const PatientList: React.FC<PatientListProps> = ({ records, onRecordClick }) => 
                   </IconButton>
                 </Box>
 
-                {/* Doctor Info */}
+                {/* Instructor Info */}
                 <Box sx={{ mb: 2 }}>
                   <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Evaluated by
+                    Instructor
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Box sx={{ 
@@ -235,7 +235,7 @@ const PatientList: React.FC<PatientListProps> = ({ records, onRecordClick }) => 
             No records found
           </Typography>
           <Typography variant="body2">
-            {searchTerm ? 'Try adjusting your search terms' : 'No patient records available yet'}
+            {searchTerm ? 'Try adjusting your search terms' : 'No student records available yet'}
           </Typography>
         </Box>
       )}
@@ -243,4 +243,4 @@ const PatientList: React.FC<PatientListProps> = ({ records, onRecordClick }) => 
   );
 };
 
-export default PatientList;
+export default StudentList;

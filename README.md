@@ -1,14 +1,14 @@
-# Medical Notes App
+# Student Notes App
 
-A React frontend application for recording and evaluating medical notes with a modern Material UI interface.
+A React frontend application for recording and evaluating student notes with a modern Material UI interface.
 
 ## Features
 
 - **Student Management**: Select from existing students or add new ones
-- **Doctors Information**: Choose doctors or add new ones
-- **Evaluation (Recording)**: Live speech-to-text transcription via the browser’s speech API
+- **Instructor Information**: Choose instructors or add new ones
+- **Evaluation (Recording)**: Live speech-to-text transcription via the browser's speech API
 - **Assessment**: Improve the transcription and extract key points using AI
-- **Past Evaluation**: View each student’s latest evaluation with expandable history
+- **Past Evaluation**: View each student's latest evaluation with expandable history
 - **Responsive Design**: Built with Material UI for a modern, mobile-friendly interface
 
 ## Requirements

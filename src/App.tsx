@@ -6,9 +6,9 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import PermanentSidebar from './components/PermanentSidebar';
 import SummarizerPage from './components/SummarizerPage';
-import PatientsPage from './components/PatientsPage';
+import StudentsPage from './components/StudentsPage';
 import EvaluatorsPage from './components/EvaluatorsPage';
-import PatientInfoPage from './components/PatientInfoPage';
+import StudentInfoPage from './components/StudentInfoPage';
 
 const AppContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<string>('summarizer');
@@ -36,11 +36,11 @@ const AppContent: React.FC = () => {
       case 'summarizer':
         return <SummarizerPage />;
       case 'patients':
-        return <PatientsPage />;
+        return <StudentsPage />;
       case 'evaluators':
         return <EvaluatorsPage />;
       case 'patientInfo':
-        return <PatientInfoPage />;
+        return <StudentInfoPage />;
       default:
         return <SummarizerPage />;
     }

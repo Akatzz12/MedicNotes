@@ -17,18 +17,17 @@ import {
 import { Person as PersonIcon, ExpandMore as ExpandMoreIcon, History as HistoryIcon } from '@mui/icons-material';
 import { PatientRecord } from '../types';
 
-interface PatientDetailModalProps {
+interface StudentDetailModalProps {
   open: boolean;
   onClose: () => void;
   record: PatientRecord | null;
   allRecords?: PatientRecord[];
 }
 
-const PatientDetailModal: React.FC<PatientDetailModalProps> = ({ open, onClose, record, allRecords = [] }) => {
+const StudentDetailModal: React.FC<StudentDetailModalProps> = ({ open, onClose, record, allRecords = [] }) => {
   const [expanded, setExpanded] = useState<string | false>(false);
   
-  // Get all records for this patient, sorted by date (latest first)
-  const patientRecords = (() => {
+  const studentRecords = (() => {
     if (!record) return [];
     return allRecords
       .filter(r => r.patientId === record.patientId)
@@ -37,8 +36,8 @@ const PatientDetailModal: React.FC<PatientDetailModalProps> = ({ open, onClose, 
 
   if (!record) return null;
 
-  const latestRecord = patientRecords[0] || record;
-  const hasMultipleRecords = patientRecords.length > 1;
+  const latestRecord = studentRecords[0] || record;
+  const hasMultipleRecords = studentRecords.length > 1;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -78,7 +77,7 @@ const PatientDetailModal: React.FC<PatientDetailModalProps> = ({ open, onClose, 
           </Typography>
           {hasMultipleRecords && (
             <Chip 
-              label={`${patientRecords.length} visits`} 
+              label={`${studentRecords.length} visits`} 
               size="small" 
               color="primary" 
               variant="outlined"
@@ -89,7 +88,6 @@ const PatientDetailModal: React.FC<PatientDetailModalProps> = ({ open, onClose, 
 
       <DialogContent dividers sx={{ p: 1.5 }}>
         <Grid container spacing={1.5}>
-          {/* Patient Information */}
           <Grid item xs={12} md={6}>
             <Typography variant="subtitle1" gutterBottom sx={{ color: 'primary.main', fontWeight: 600 }}>
               Student Information
@@ -108,13 +106,12 @@ const PatientDetailModal: React.FC<PatientDetailModalProps> = ({ open, onClose, 
             </Box>
           </Grid>
 
-          {/* Doctor Information */}
           <Grid item xs={12} md={6}>
             <Typography variant="subtitle1" gutterBottom sx={{ color: 'primary.main', fontWeight: 600 }}>
-              Doctor Information
+              Instructor Information
             </Typography>
             <Box sx={{ mb: 1.5 }}>
-              <Typography variant="body2" color="text.secondary">Latest Doctor</Typography>
+              <Typography variant="body2" color="text.secondary">Latest Instructor</Typography>
               <Typography variant="body1" sx={{ fontWeight: 500 }}>{latestRecord.evaluatorName}</Typography>
             </Box>
             <Box sx={{ mb: 1.5 }}>
@@ -127,7 +124,6 @@ const PatientDetailModal: React.FC<PatientDetailModalProps> = ({ open, onClose, 
             <Divider sx={{ my: 0.5 }} />
           </Grid>
 
-          {/* Latest Summary and Key Points */}
           <Grid item xs={12} md={8}>
             <Typography variant="subtitle1" gutterBottom sx={{ color: 'primary.main', fontWeight: 600, mb: 0.5 }}>
               Latest Assessments
@@ -164,7 +160,6 @@ const PatientDetailModal: React.FC<PatientDetailModalProps> = ({ open, onClose, 
             </Box>
           </Grid>
 
-          {/* Expandable History Section */}
           {hasMultipleRecords && (
             <Grid item xs={12}>
               <Divider sx={{ my: 1 }} />
@@ -180,24 +175,24 @@ const PatientDetailModal: React.FC<PatientDetailModalProps> = ({ open, onClose, 
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <HistoryIcon color="primary" fontSize="small" />
                     <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.85rem' }}>
-                      All Assessments ({patientRecords.length})
+                      All Assessments ({studentRecords.length})
                     </Typography>
                   </Box>
                 </AccordionSummary>
                 <AccordionDetails sx={{ p: 0 }}>
                   <Box sx={{ maxHeight: 400, overflow: 'auto' }}>
-                    {patientRecords.map((visitRecord, index) => (
-                      <Box key={visitRecord.id} sx={{ p: 1.5, borderBottom: index < patientRecords.length - 1 ? '1px solid rgba(0, 0, 0, 0.08)' : 'none' }}>
+                    {studentRecords.map((visitRecord, index) => (
+                      <Box key={visitRecord.id} sx={{ p: 1.5, borderBottom: index < studentRecords.length - 1 ? '1px solid rgba(0, 0, 0, 0.08)' : 'none' }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                            Visit {patientRecords.length - index}
+                            Visit {studentRecords.length - index}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
                             {formatDate(visitRecord.date)}
                           </Typography>
                         </Box>
                         <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
-                          Doctor: {visitRecord.evaluatorName}
+                          Instructor: {visitRecord.evaluatorName}
                         </Typography>
                         <Box sx={{ 
                           p: 1, 
@@ -239,4 +234,4 @@ const PatientDetailModal: React.FC<PatientDetailModalProps> = ({ open, onClose, 
   );
 };
 
-export default PatientDetailModal;
+export default StudentDetailModal;

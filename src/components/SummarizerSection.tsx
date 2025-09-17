@@ -80,27 +80,27 @@ const SummarizerSection: React.FC<SummarizerSectionProps> = ({ transcriptionText
     });
     
     if (!summary || selectedPatient === '' || selectedEvaluator === '') {
-      setError('Please complete assessment and ensure student and doctor are selected');
+      setError('Please complete assessment and ensure student and instructor are selected');
       return;
     }
 
     const patient = patients.find(p => p.id === selectedPatient);
     const evaluator = evaluators.find(e => e.id === selectedEvaluator);
 
-    console.log('Patient lookup:', {
+    console.log('Student lookup:', {
       selectedPatient,
       patients: patients.map(p => ({ id: p.id, name: p.name })),
       foundPatient: patient
     });
 
-    console.log('Evaluator lookup:', {
+    console.log('Instructor lookup:', {
       selectedEvaluator,
       evaluators: evaluators.map(e => ({ id: e.id, name: e.name })),
       foundEvaluator: evaluator
     });
 
     if (!patient || !evaluator) {
-      setError('Student or doctor not found');
+      setError('Student or instructor not found');
       return;
     }
 
@@ -134,7 +134,7 @@ const SummarizerSection: React.FC<SummarizerSectionProps> = ({ transcriptionText
         setSaveSuccess(false);
       }, 3000);
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to save patient record');
+      setError(error instanceof Error ? error.message : 'Failed to save student record');
     }
   };
 

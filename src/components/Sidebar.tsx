@@ -13,7 +13,8 @@ import {
 import {
   Summarize as SummarizeIcon,
   Person as PersonIcon,
-  MedicalServices as DoctorIcon,
+
+  School as InstructorIcon,
   Close as CloseIcon
 } from '@mui/icons-material';
 
@@ -39,8 +40,8 @@ const menuItems = [
   },
   {
     id: 'evaluators',
-    label: 'Doctors',
-    icon: <DoctorIcon />
+    label: 'Instructors',
+    icon: <InstructorIcon />
   }
   ,
   {

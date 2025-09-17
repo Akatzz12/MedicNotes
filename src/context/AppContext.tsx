@@ -39,8 +39,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       const data = await apiService.getPatients();
       setPatients(data);
     } catch (error) {
-      setPatientsError(error instanceof Error ? error.message : 'Failed to load patients');
-      console.error('Error loading patients:', error);
+      setPatientsError(error instanceof Error ? error.message : 'Failed to load students');
+      console.error('Error loading students:', error);
     } finally {
       setPatientsLoading(false);
     }
@@ -53,8 +53,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       const data = await apiService.getDoctors();
       setEvaluators(data);
     } catch (error) {
-      setEvaluatorsError(error instanceof Error ? error.message : 'Failed to load evaluators');
-      console.error('Error loading evaluators:', error);
+      setEvaluatorsError(error instanceof Error ? error.message : 'Failed to load instructors');
+      console.error('Error loading instructors:', error);
     } finally {
       setEvaluatorsLoading(false);
     }
@@ -67,8 +67,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       const data = await apiService.getPatientRecords();
       setPatientRecords(data);
     } catch (error) {
-      setPatientRecordsError(error instanceof Error ? error.message : 'Failed to load patient records');
-      console.error('Error loading patient records:', error);
+      setPatientRecordsError(error instanceof Error ? error.message : 'Failed to load student records');
+      console.error('Error loading student records:', error);
     } finally {
       setPatientRecordsLoading(false);
     }
@@ -91,7 +91,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       setEvaluators(prev => [...prev, createdEvaluator]);
       await loadEvaluators();
     } catch (error) {
-      setEvaluatorsError(error instanceof Error ? error.message : 'Failed to add evaluator');
+      setEvaluatorsError(error instanceof Error ? error.message : 'Failed to add instructor');
       throw error;
     }
   };
@@ -113,7 +113,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       setPatientRecords(prev => [createdRecord, ...prev]);
       await loadPatientRecords();
     } catch (error) {
-      console.error('Error adding patient record:', error);
+      console.error('Error adding student record:', error);
       throw error;
     }
   };

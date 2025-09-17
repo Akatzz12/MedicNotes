@@ -9,7 +9,7 @@ import {
   IconButton,
   Typography
 } from '@mui/material';
-import { Summarize as SummarizeIcon, Person as PersonIcon, MedicalServices as DoctorIcon, ChevronLeft, ChevronRight } from '@mui/icons-material';
+import { Summarize as SummarizeIcon, Person as PersonIcon, School as InstructorIcon, ChevronLeft, ChevronRight } from '@mui/icons-material';
 
 interface PermanentSidebarProps {
   currentPage: string;
@@ -36,9 +36,9 @@ const menuItems = [
   },
   {
     id: 'evaluators',
-    label: 'Doctors',
-    icon: <DoctorIcon />,
-    description: 'View doctors'
+    label: 'Instructors',
+    icon: <InstructorIcon />,
+    description: 'View instructors'
   }
   ,
   {

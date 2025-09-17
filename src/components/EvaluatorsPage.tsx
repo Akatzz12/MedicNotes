@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Typography, Box, Grid, Card, CardContent, Avatar, Button, TextField, InputAdornment, Alert, CircularProgress } from '@mui/material';
-import { MedicalServices as DoctorIcon, Add as AddIcon, Search as SearchIcon } from '@mui/icons-material';
+import { School as InstructorIcon, Add as AddIcon, Search as SearchIcon } from '@mui/icons-material';
 import Modal from './Modal';
 import { FormData } from '../types';
 import { useAppContext } from '../context/AppContext';
@@ -19,28 +19,28 @@ const EvaluatorsPage: React.FC = () => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
-  const handleAddEvaluator = async (formData: FormData): Promise<void> => {
+  const handleAddInstructor = async (formData: FormData): Promise<void> => {
     try {
-      const newEvaluator = {
-        name: formData.evaluatorName as string,
-        contact: formData.evaluatorContact as string
+      const newInstructor = {
+        name: formData.instructorName as string,
+        contact: formData.instructorContact as string
       };
-      await addEvaluator(newEvaluator);
+      await addEvaluator(newInstructor);
       setModalOpen(false);
     } catch (error) {
-      console.error('Error adding evaluator:', error);
+      console.error('Error adding instructor:', error);
       // Error is handled in context
     }
   };
 
-  // Filter evaluators based on search term
-  const filteredEvaluators = (() => {
+  // Filter instructors based on search term
+  const filteredInstructors = (() => {
     if (!searchTerm.trim()) return evaluators;
     
     const term = searchTerm.toLowerCase();
-    return evaluators.filter(evaluator => {
-      const name = String(evaluator?.name || '');
-      const contact = String(evaluator?.contact || '');
+    return evaluators.filter(instructor => {
+      const name = String(instructor?.name || '');
+      const contact = String(instructor?.contact || '');
       
       return name.toLowerCase().includes(term) ||
              contact.toLowerCase().includes(term);
@@ -59,7 +59,7 @@ const EvaluatorsPage: React.FC = () => {
           gap: { xs: 2, sm: 0 }
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 0 }}>
-            <DoctorIcon sx={{ fontSize: { xs: 32, sm: 40 }, color: 'primary.main' }} />
+            <InstructorIcon sx={{ fontSize: { xs: 32, sm: 40 }, color: 'primary.main' }} />
             <Typography 
               variant="h4" 
               component="h1" 
@@ -71,7 +71,7 @@ const EvaluatorsPage: React.FC = () => {
                 whiteSpace: 'nowrap'
               }}
             >
-              Doctors Information
+              Instructors Information
             </Typography>
           </Box>
           <Button
@@ -86,7 +86,7 @@ const EvaluatorsPage: React.FC = () => {
               py: { xs: 1, sm: 1.5 }
             }}
           >
-            Add Doctor
+            Add Instructor
           </Button>
         </Box>
       </Box>
@@ -110,7 +110,7 @@ const EvaluatorsPage: React.FC = () => {
       <Box sx={{ mb: 3 }}>
         <TextField
           fullWidth
-          placeholder="Search doctors by name or contact..."
+          placeholder="Search instructors by name or contact..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
@@ -131,7 +131,7 @@ const EvaluatorsPage: React.FC = () => {
 
       {/* Results Count */}
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        {filteredEvaluators.length} doctor{filteredEvaluators.length !== 1 ? 's' : ''} found
+        {filteredInstructors.length} instructor{filteredInstructors.length !== 1 ? 's' : ''} found
       </Typography>
 
       {/* Loading State */}
@@ -141,17 +141,17 @@ const EvaluatorsPage: React.FC = () => {
         </Box>
       )}
 
-      {/* Evaluators Grid */}
+      {/* Instructors Grid */}
       {!evaluatorsLoading && (
         <Grid container spacing={2}>
-          {filteredEvaluators.map((evaluator, index) => {
-            if (!evaluator) {
-              console.warn('Undefined evaluator at index:', index);
+          {filteredInstructors.map((instructor, index) => {
+            if (!instructor) {
+              console.warn('Undefined instructor at index:', index);
               return null;
             }
             
             return (
-            <Grid item xs={12} sm={6} lg={4} key={evaluator.id || index}>
+            <Grid item xs={12} sm={6} lg={4} key={instructor.id || index}>
               <Card sx={{ 
                 height: '100%',
                 cursor: 'pointer',
@@ -170,11 +170,11 @@ const EvaluatorsPage: React.FC = () => {
                       height: 40,
                       fontSize: '0.9rem'
                     }}>
-                      {getInitials(evaluator.name)}
+                      {getInitials(instructor.name)}
                     </Avatar>
                     <Box>
                       <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1rem' }}>
-                        {evaluator.name || 'Unknown'}
+                        {instructor.name || 'Unknown'}
                       </Typography>
                     </Box>
                   </Box>
@@ -185,7 +185,7 @@ const EvaluatorsPage: React.FC = () => {
                       Contact
                     </Typography>
                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                      {evaluator.contact || 'No contact'}
+                      {instructor.contact || 'No contact'}
                     </Typography>
                   </Box>
                 </CardContent>
@@ -199,13 +199,13 @@ const EvaluatorsPage: React.FC = () => {
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title="Add New Doctor"
+        title="Add New Instructor"
         fields={[
-          { name: 'evaluatorName', label: 'Doctor Name', type: 'text', required: true },
-          { name: 'evaluatorContact', label: 'Doctor Contact', type: 'text', required: true }
+          { name: 'instructorName', label: 'Instructor Name', type: 'text', required: true },
+          { name: 'instructorContact', label: 'Instructor Contact', type: 'text', required: true }
         ]}
-        onSubmit={handleAddEvaluator}
-        submitButtonText="Add Doctor"
+        onSubmit={handleAddInstructor}
+        submitButtonText="Add Instructor"
       />
     </Container>
   );

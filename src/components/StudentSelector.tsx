@@ -8,15 +8,15 @@ import {
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import Modal from './Modal';
-import PatientDetailModal from './PatientDetailModal';
+import StudentDetailModal from './StudentDetailModal';
 import { PatientSelectorProps, FormData, Patient } from '../types';
 import { useAppContext } from '../context/AppContext';
 
 const PatientSelector: React.FC<PatientSelectorProps> = ({ 
   patients, 
   selectedPatient, 
-  onPatientSelect, 
-  onPatientAdd 
+  onStudentSelect, 
+  onStudentAdd 
 }) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [historyOpen, setHistoryOpen] = useState<boolean>(false);
@@ -37,7 +37,7 @@ const PatientSelector: React.FC<PatientSelectorProps> = ({
         contact: formData.patientContact as string
       };
       
-      await (onPatientAdd as (patient: Omit<Patient, 'id'>) => Promise<void>)(newPatient);
+      await (onStudentAdd as (patient: Omit<Patient, 'id'>) => Promise<void>)(newPatient);
       setModalOpen(false);
     } catch (error) {
       console.error('Error adding patient:', error);
@@ -67,7 +67,7 @@ const PatientSelector: React.FC<PatientSelectorProps> = ({
             getOptionLabel={(option) => option.name}
             value={patients.find(p => p.id === selectedPatient) || null}
             onChange={(event, newValue) => {
-              onPatientSelect(newValue?.id || '');
+              onStudentSelect(newValue?.id || '');
             }}
             renderInput={(params) => (
               <TextField
@@ -157,7 +157,7 @@ const PatientSelector: React.FC<PatientSelectorProps> = ({
         onSubmit={handleAddPatient}
       />
       {historyOpen && (
-        <PatientDetailModal
+        <StudentDetailModal
           open={historyOpen}
           onClose={() => setHistoryOpen(false)}
           record={(() => {

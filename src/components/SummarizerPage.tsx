@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Grid } from '@mui/material';
 import { useAppContext } from '../context/AppContext';
-import PatientSelector from './PatientSelector';
+import StudentSelector from './StudentSelector';
 import EvaluatorSelector from './EvaluatorSelector';
 import RecordingSection from './RecordingSection';
 import SummarizerSection from './SummarizerSection';
@@ -23,19 +23,19 @@ const SummarizerPage: React.FC = () => {
     <Container maxWidth="lg" sx={{ py: 2 }}>
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} md={6}>
-          <PatientSelector
+          <StudentSelector
             patients={patients}
             selectedPatient={selectedPatient}
-            onPatientSelect={setSelectedPatient}
-            onPatientAdd={addPatient}
+            onStudentSelect={setSelectedPatient}
+            onStudentAdd={addPatient}
           />
         </Grid>
         <Grid item xs={12} md={6}>
           <EvaluatorSelector
             evaluators={evaluators}
             selectedEvaluator={selectedEvaluator}
-            onEvaluatorSelect={setSelectedEvaluator}
-            onEvaluatorAdd={addEvaluator}
+            onInstructorSelect={setSelectedEvaluator}
+            onInstructorAdd={addEvaluator}
           />
         </Grid>
       </Grid>

@@ -32,7 +32,7 @@ const RecordingSection: React.FC<RecordingSectionProps> = ({ onTranscriptionUpda
   }, [browserSupportsSpeechRecognition]);
 
   useEffect(() => {
-    const combined = `${finalTranscript}${interimTranscript ? ` ${interimTranscript}` : ''}`.trim();
+    const combined = (finalTranscript + (interimTranscript ? ' ' + interimTranscript : '')).trim();
     updateTranscription(combined);
     onTranscriptionUpdate(combined);
   }, [finalTranscript, interimTranscript, updateTranscription, onTranscriptionUpdate]);
